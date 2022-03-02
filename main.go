@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"goAccFuel/widgets"
 	"image"
 	"image/color"
@@ -20,7 +19,6 @@ import (
 )
 
 var backgroundColor = color.NRGBA{R: 18, G: 18, B: 18, A: 255} // very dark gray
-
 var textColor = color.NRGBA{R: 222, G: 222, B: 222, A: 222}
 
 var fontCollection []text.FontFace = gofont.Collection()
@@ -39,7 +37,7 @@ func main() {
 		w := app.NewWindow(
 			app.Title("Go ACC Fuel"),
 			app.Size(unit.Dp(600), unit.Dp(200)),
-			app.MaxSize(unit.Dp(600), unit.Dp(200)),
+			//app.MaxSize(unit.Dp(600), unit.Dp(200)),
 			app.MinSize(unit.Dp(600), unit.Dp(200)),
 		)
 
@@ -87,20 +85,21 @@ func AccLayout(ops *op.Ops, gtx C) {
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 40
-		fmt.Printf("green box : %v\n", max)
+		//fmt.Printf("green box : %v\n", max)
 		//return widgets.ColorBox(gtx, max, widgets.Green)
 		return widgets.HeaderInfo(LabelFont, LabelFontSize.Scale(2), textColor, textShaper).Layout(gtx)
 	}))
 
 	rows = append(rows, layout.Flexed(1, func(gtx C) D {
-		fmt.Printf("red box : %v\n", gtx.Constraints)
-		return widgets.ColorBox(gtx, gtx.Constraints.Max, widgets.Red)
+		//fmt.Printf("red box : %v\n", gtx.Constraints)
+		//return widgets.ColorBox(gtx, gtx.Constraints.Max, widgets.Red)
+		return widgets.BodyInfo().Layout(gtx)
 	}))
 
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 20
-		fmt.Printf("blue box : %v\n", max)
+		//fmt.Printf("blue box : %v\n", max)
 
 		return widgets.FooterInfo(LabelFont, LabelFontSize, textColor, textShaper).Layout(gtx)
 
@@ -108,9 +107,9 @@ func AccLayout(ops *op.Ops, gtx C) {
 
 	layout.Flex{Spacing: layout.SpaceAround}.Layout(gtx,
 		layout.Rigid(func(gtx C) D {
-			fmt.Printf("rigit : %v\n", gtx.Constraints)
+			//fmt.Printf("rigit : %v\n", gtx.Constraints)
 			return layout.UniformInset(unit.Dp(10)).Layout(gtx, func(gtx C) D {
-				fmt.Printf("flex : %v\n", gtx.Constraints)
+				//fmt.Printf("flex : %v\n", gtx.Constraints)
 				return layout.Flex{Axis: layout.Vertical}.Layout(gtx, rows...)
 			})
 		}),
