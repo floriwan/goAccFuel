@@ -5,8 +5,6 @@ import (
 
 	"gioui.org/layout"
 	"gioui.org/op/paint"
-	"gioui.org/text"
-	"gioui.org/unit"
 	"gioui.org/widget"
 )
 
@@ -16,18 +14,12 @@ type (
 )
 
 type FooterInfoStyle struct {
-	textFont     text.Font
-	textFontSize unit.Value
-	textShaper   *text.Cache
-	textColor    color.NRGBA
+	textColor color.NRGBA
 }
 
-func FooterInfo(font text.Font, size unit.Value, color color.NRGBA, shaper *text.Cache) FooterInfoStyle {
+func FooterInfo(color color.NRGBA) FooterInfoStyle {
 	return FooterInfoStyle{
-		textFont:     font,
-		textFontSize: size,
-		textShaper:   shaper,
-		textColor:    color,
+		textColor: color,
 	}
 }
 
@@ -38,6 +30,6 @@ func (f FooterInfoStyle) Layout(gtx C) D {
 		}),
 		layout.Rigid(func(gtx C) D {
 			paint.ColorOp{Color: f.textColor}.Add(gtx.Ops)
-			return widget.Label{}.Layout(gtx, f.textShaper, f.textFont, f.textFontSize, "ACC 1.23.4")
+			return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "ACC 1.23.4")
 		}))
 }

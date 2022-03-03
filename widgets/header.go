@@ -1,28 +1,31 @@
 package widgets
 
 import (
+	"fmt"
 	"image/color"
+	"strconv"
+	"time"
 
 	"gioui.org/layout"
 	"gioui.org/op/paint"
-	"gioui.org/text"
 	"gioui.org/unit"
 	"gioui.org/widget"
 )
 
 type HeaderInfoStyle struct {
-	textFont     text.Font
-	textFontSize unit.Value
-	textShaper   *text.Cache
-	textColor    color.NRGBA
+	textColor color.NRGBA
+	fuel      int
+	length    time.Duration
+	laps      int
 }
 
-func HeaderInfo(font text.Font, size unit.Value, color color.NRGBA, shaper *text.Cache) HeaderInfoStyle {
+func HeaderInfo(color color.NRGBA,
+	fuel int, length time.Duration, laps int) HeaderInfoStyle {
 	return HeaderInfoStyle{
-		textFont:     font,
-		textFontSize: size,
-		textShaper:   shaper,
-		textColor:    color,
+		textColor: color,
+		fuel:      fuel,
+		length:    length,
+		laps:      laps,
 	}
 }
 
@@ -49,10 +52,11 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 							Alignment: layout.End,
 						}.Layout(gtx,
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize.Scale(0.5), "Session")
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Session")
 							}),
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize, "95min")
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2),
+									fmtDuration(h.length))
 							}),
 						)
 					})
@@ -70,10 +74,10 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 							Alignment: layout.End,
 						}.Layout(gtx,
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize.Scale(0.5), "Laps")
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Laps")
 							}),
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize, "73")
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), strconv.Itoa(h.laps))
 							}),
 						)
 					})
@@ -89,10 +93,10 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 							Alignment: layout.End,
 						}.Layout(gtx,
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize.Scale(0.5), "Fuel")
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Fuel")
 							}),
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize, "145l")
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), strconv.Itoa(h.fuel)+"l")
 							}),
 						)
 					})
@@ -109,4 +113,18 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 				paint.ColorOp{Color: h.textColor}.Add(gtx.Ops)
 				return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize, "Session Info")
 			}))*/
+}
+
+func fmtDuration(d time.Duration) string {
+	d = d.Round(time.Second)
+
+	h := d / time.Hour
+	d -= h * time.Hour
+
+	m := d / time.Minute
+	d -= m * time.Minute
+
+	s := d / time.Second
+
+	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }

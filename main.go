@@ -10,23 +10,17 @@ import (
 	"os"
 
 	"gioui.org/app"
-	"gioui.org/font/gofont"
 	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
-	"gioui.org/text"
 	"gioui.org/unit"
 )
 
 var backgroundColor = color.NRGBA{R: 18, G: 18, B: 18, A: 255} // very dark gray
 var textColor = color.NRGBA{R: 222, G: 222, B: 222, A: 222}
 
-var fontCollection []text.FontFace = gofont.Collection()
-var textShaper = text.NewCache(fontCollection)
-var LabelFont = fontCollection[0].Font
-var LabelFontSize = unit.Px(10)
 var accData acc.AccData
 
 type (
@@ -95,18 +89,28 @@ func AccLayout(ops *op.Ops, gtx C) {
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 40
-		return widgets.HeaderInfo(LabelFont, LabelFontSize.Scale(2), textColor, textShaper).Layout(gtx)
+		return widgets.HeaderInfo(
+			textColor,
+			accData.SessionLiter,
+			accData.SessionLength,
+			accData.SessionLaps).Layout(gtx)
 	}))
 
 	rows = append(rows, layout.Flexed(1, func(gtx C) D {
-		return widgets.BodyInfo(accData.RaceProgress).Layout(gtx)
+		return widgets.BodyInfo(
+			textColor,
+			accData.RaceProgress,
+			accData.ProgressWithFule,
+			accData.FuelLevel,
+			accData.FuelPerLap,
+			accData.SessionTime).Layout(gtx)
 	}))
 
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 20
 
-		return widgets.FooterInfo(LabelFont, LabelFontSize, textColor, textShaper).Layout(gtx)
+		return widgets.FooterInfo(textColor).Layout(gtx)
 
 	}))
 

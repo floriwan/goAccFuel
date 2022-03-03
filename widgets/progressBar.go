@@ -1,8 +1,6 @@
 package widgets
 
 import (
-	"fmt"
-
 	"gioui.org/f32"
 	"gioui.org/layout"
 	"gioui.org/op/clip"
@@ -22,7 +20,7 @@ func ProgressBarInfo(raceProgress float32) ProgressBarStyle {
 func (f ProgressBarStyle) Layout(gtx C) D {
 	return layout.Flex{}.Layout(gtx,
 		layout.Rigid(func(gtx C) D {
-			fmt.Printf("progress bar : %v\n", gtx.Constraints)
+
 			gtx.Constraints.Max.Y = 20
 
 			minX := float32(gtx.Constraints.Min.X)
