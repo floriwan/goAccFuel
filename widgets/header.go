@@ -128,3 +128,20 @@ func fmtDuration(d time.Duration) string {
 
 	return fmt.Sprintf("%02d:%02d:%02d", h, m, s)
 }
+
+func fmtLapTime(d time.Duration) string {
+	d = d.Round(time.Second)
+
+	h := d / time.Hour
+	d -= h * time.Hour
+
+	m := d / time.Minute
+	d -= m * time.Minute
+
+	s := d / time.Second
+	d -= s * time.Second
+
+	ms := d / time.Millisecond
+
+	return fmt.Sprintf("%02d:%02d.%03d", m, s, ms)
+}

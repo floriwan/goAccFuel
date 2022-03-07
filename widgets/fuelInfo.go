@@ -16,15 +16,17 @@ type FuelInfoStyle struct {
 	fuelLevel   float32
 	fuelPerLap  float32
 	sessionTime time.Duration
+	lapTime     time.Duration
 }
 
 func FuelInfo(color color.NRGBA,
-	fuelLevel float32, fuelPerLap float32, sessionTime time.Duration) FuelInfoStyle {
+	fuelLevel float32, fuelPerLap float32, sessionTime time.Duration, lapTime time.Duration) FuelInfoStyle {
 	return FuelInfoStyle{
 		textColor:   color,
 		fuelLevel:   fuelLevel,
 		fuelPerLap:  fuelPerLap,
 		sessionTime: sessionTime,
+		lapTime:     lapTime,
 	}
 }
 
@@ -37,6 +39,27 @@ func (f FuelInfoStyle) Layout(gtx C) D {
 			paint.ColorOp{Color: textColor}.Add(gtx.Ops)
 
 			return layout.Flex{}.Layout(gtx,
+
+				layout.Rigid(func(gtx C) D {
+
+					return layout.Inset{
+						Left:  unit.Dp(5),
+						Right: unit.Dp(5),
+					}.Layout(gtx, func(gtx C) D {
+						return layout.Flex{
+							Axis:      layout.Vertical,
+							Alignment: layout.End,
+						}.Layout(gtx,
+							layout.Rigid(func(gtx C) D {
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Lap Time")
+							}),
+							layout.Rigid(func(gtx C) D {
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmtLapTime(f.lapTime))
+							}),
+						)
+
+					})
+				}),
 
 				layout.Rigid(func(gtx C) D {
 
@@ -73,7 +96,7 @@ func (f FuelInfoStyle) Layout(gtx C) D {
 								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Fuel Level")
 							}),
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf("%v", f.fuelLevel))
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf("%.1f", f.fuelLevel))
 							}),
 						)
 
@@ -94,7 +117,7 @@ func (f FuelInfoStyle) Layout(gtx C) D {
 								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Fuel Per Lap")
 							}),
 							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf("%v", f.fuelPerLap))
+								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf("%.2f", f.fuelPerLap))
 							}),
 						)
 

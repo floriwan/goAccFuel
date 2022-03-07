@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	"goAccFuel/acc"
 	"goAccFuel/widgets"
 	"image"
@@ -30,8 +30,11 @@ type (
 
 func main() {
 
+	accSim := flag.Bool("sim", false, "a bool")
+	flag.Parse()
+
 	accChan := make(chan acc.AccData)
-	go acc.Update(accChan)
+	go acc.Update(*accSim, accChan)
 
 	go func() {
 		w := app.NewWindow(
@@ -72,7 +75,7 @@ func run(w *app.Window, accChan <-chan acc.AccData) error {
 				e.Frame(gtx.Ops)
 			}
 		case a := <-accChan:
-			fmt.Printf("acc data %+v\n", a)
+			log.Printf("%+v\n", a)
 			accData = a
 			w.Invalidate()
 		}
@@ -100,10 +103,13 @@ func AccLayout(ops *op.Ops, gtx C) {
 		return widgets.BodyInfo(
 			textColor,
 			accData.RaceProgress,
-			accData.ProgressWithFule,
+			accData.ProgressWithFuel,
 			accData.FuelLevel,
 			accData.FuelPerLap,
-			accData.SessionTime).Layout(gtx)
+			accData.SessionTime,
+			accData.LapTime,
+			accData.BoxLap,
+			accData.RefuelLevel).Layout(gtx)
 	}))
 
 	rows = append(rows, layout.Rigid(func(gtx C) D {
