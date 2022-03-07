@@ -7,8 +7,6 @@ import (
 
 	"gioui.org/layout"
 	"gioui.org/op/paint"
-	"gioui.org/unit"
-	"gioui.org/widget"
 )
 
 type FuelInfoStyle struct {
@@ -41,87 +39,19 @@ func (f FuelInfoStyle) Layout(gtx C) D {
 			return layout.Flex{}.Layout(gtx,
 
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Lap Time")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmtLapTime(f.lapTime))
-							}),
-						)
-
-					})
+					return InfoLabel(gtx, "Lapt Time", fmtLapTime(f.lapTime))
 				}),
 
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Session Time")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmtDuration(f.sessionTime))
-							}),
-						)
-
-					})
+					return InfoLabel(gtx, "Session Time", fmtDuration(f.sessionTime))
 				}),
 
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Fuel Level")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf("%.1f", f.fuelLevel))
-							}),
-						)
-
-					})
+					return InfoLabel(gtx, "Fuel Level", fmt.Sprintf("%.1f", f.fuelLevel))
 				}),
 
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Fuel Per Lap")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf("%.2f", f.fuelPerLap))
-							}),
-						)
-
-					})
+					return InfoLabel(gtx, "Fuel Per Lap", fmt.Sprintf("%.2f", f.fuelPerLap))
 				}),
 			)
 		}),

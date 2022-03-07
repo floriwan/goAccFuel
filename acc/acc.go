@@ -17,6 +17,7 @@ type AccData struct {
 	LapsWithFuel     float32
 	LapsDone         int
 	BoxLap           int
+	LapsToGo         float32
 	RefuelLevel      float32
 }
 

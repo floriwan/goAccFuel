@@ -8,8 +8,6 @@ import (
 
 	"gioui.org/layout"
 	"gioui.org/op/paint"
-	"gioui.org/unit"
-	"gioui.org/widget"
 )
 
 type HeaderInfoStyle struct {
@@ -37,25 +35,7 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 			paint.ColorOp{Color: h.textColor}.Add(gtx.Ops)
 			return layout.Flex{}.Layout(gtx,
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Status")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2),
-									"unknown")
-							}),
-						)
-					})
-
+					return InfoLabel(gtx, "Status", "unknown")
 				}),
 			)
 
@@ -68,77 +48,20 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 			paint.ColorOp{Color: h.textColor}.Add(gtx.Ops)
 			return layout.Flex{}.Layout(gtx,
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Session")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2),
-									fmtDuration(h.length))
-							}),
-						)
-					})
-
+					return InfoLabel(gtx, "Session", fmtDuration(h.length))
 				}),
 
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Laps")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), strconv.Itoa(h.laps))
-							}),
-						)
-					})
+					return InfoLabel(gtx, "Laps", strconv.Itoa(h.laps))
 				}),
 
 				layout.Rigid(func(gtx C) D {
-
-					return layout.Inset{
-						Left: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Fuel")
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), strconv.Itoa(h.fuel)+"l")
-							}),
-						)
-					})
+					return InfoLabel(gtx, "Fuel", strconv.Itoa(h.fuel)+"l")
 				}),
 			)
 
 		}))
-	/*
-		return layout.Flex{}.Layout(gtx,
-			layout.Flexed(1, func(gtx C) D {
-				return ColorBox(gtx, gtx.Constraints.Min, Blue)
-			}),
-			layout.Rigid(func(gtx C) D {
-				paint.ColorOp{Color: h.textColor}.Add(gtx.Ops)
-				return widget.Label{}.Layout(gtx, h.textShaper, h.textFont, h.textFontSize, "Session Info")
-			}))*/
+
 }
 
 func fmtDuration(d time.Duration) string {

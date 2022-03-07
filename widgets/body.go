@@ -3,15 +3,12 @@ package widgets
 import (
 	"fmt"
 	"image/color"
-	"strconv"
 	"time"
 
 	"gioui.org/f32"
 	"gioui.org/layout"
 	"gioui.org/op/clip"
 	"gioui.org/op/paint"
-	"gioui.org/unit"
-	"gioui.org/widget"
 )
 
 type BodyStyle struct {
@@ -22,6 +19,7 @@ type BodyStyle struct {
 	SessionTime          time.Duration
 	LaptTime             time.Duration
 	BoxLap               int
+	LapsToGo             float32
 	RefuelLevel          float32
 }
 
@@ -33,6 +31,7 @@ func BodyInfo(color color.NRGBA,
 	sessionTime time.Duration,
 	lapTime time.Duration,
 	boxLap int,
+	lapsToGo float32,
 	refuelLevel float32) BodyStyle {
 	return BodyStyle{
 		RaceProgress:         raceProgress,
@@ -42,6 +41,7 @@ func BodyInfo(color color.NRGBA,
 		SessionTime:          sessionTime,
 		LaptTime:             lapTime,
 		BoxLap:               boxLap,
+		LapsToGo:             lapsToGo,
 		RefuelLevel:          refuelLevel,
 	}
 }
@@ -55,60 +55,30 @@ func (bs BodyStyle) Layout(gtx C) D {
 			xlabel := 0 // width of the label left of the pit stop line
 
 			return layout.Flex{}.Layout(gtx,
-
+				/*
+					layout.Rigid(func(gtx C) D {
+										dim := InfoLabel(gtx, "Box Lap", fmt.Sprintf(" %.1f", strconv.Itoa(bs.BoxLap))
+					xlabel += dim.Size.X
+					return dim
+					}),
+				*/
 				layout.Rigid(func(gtx C) D {
-					paint.ColorOp{Color: textColor}.Add(gtx.Ops)
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								dim := widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Box Lap")
-								xlabel += dim.Size.X
-								return dim
-							}),
-							layout.Rigid(func(gtx C) D {
-								return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), strconv.Itoa(bs.BoxLap))
-							}),
-						)
-
-					})
+					dim := InfoLabel(gtx, "Laps With Fuel", fmt.Sprintf(" %.1f", bs.LapsToGo))
+					xlabel += dim.Size.X
+					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
-					paint.ColorOp{Color: textColor}.Add(gtx.Ops)
-					return layout.Inset{
-						Left:  unit.Dp(5),
-						Right: unit.Dp(5),
-					}.Layout(gtx, func(gtx C) D {
-						return layout.Flex{
-							Axis:      layout.Vertical,
-							Alignment: layout.End,
-						}.Layout(gtx,
-							layout.Rigid(func(gtx C) D {
-								dim := widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "Refuel")
-								//xlabel += dim.Size.X
-								return dim
-							}),
-							layout.Rigid(func(gtx C) D {
-								dim := widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize.Scale(2), fmt.Sprintf(" %.1f", bs.RefuelLevel))
-								xlabel += dim.Size.X
-								return dim
-							}),
-						)
-
-					})
+					dim := InfoLabel(gtx, "Refuel", fmt.Sprintf(" %.1f", bs.RefuelLevel))
+					xlabel += dim.Size.X
+					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
 
 					rect := clip.RRect{
-						Rect: f32.Rectangle{Min: f32.Point{X: progressPx - float32(xlabel) - 2 - 20, Y: 10},
-							Max: f32.Point{X: progressPx - float32(xlabel) + 2 - 20, Y: 40}},
+						Rect: f32.Rectangle{Min: f32.Point{X: progressPx - float32(xlabel) - 2, Y: 10},
+							Max: f32.Point{X: progressPx - float32(xlabel) + 2, Y: 40}},
 					}.Op(gtx.Ops)
 					paint.FillShape(gtx.Ops, Red, rect)
 					return layout.Dimensions{Size: gtx.Constraints.Max}

@@ -109,6 +109,7 @@ func AccLayout(ops *op.Ops, gtx C) {
 			accData.SessionTime,
 			accData.LapTime,
 			accData.BoxLap,
+			accData.LapsToGo,
 			accData.RefuelLevel).Layout(gtx)
 	}))
 

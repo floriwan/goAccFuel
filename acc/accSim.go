@@ -12,6 +12,9 @@ func updateSim(accChan chan<- AccData) {
 
 	fuelPerSec := fuelPerLap / lapTime
 	fuelLevel -= fuelPerSec
+	if fuelLevel <= 0 {
+		fuelLevel = 0
+	}
 
 	lapsWithFuel := fuelLevel / fuelPerLap
 	percentageWithFuel := (float32(lapTime*lapsWithFuel) * float32(100)) / float32(session)
@@ -34,6 +37,7 @@ func updateSim(accChan chan<- AccData) {
 		ProgressWithFuel: percentageWithFuel,
 		LapsWithFuel:     lapsWithFuel,
 		LapsDone:         lapsDone,
+		LapsToGo:         lapsWithFuel,
 		BoxLap:           lapsDone + int(lapsWithFuel),
 		RefuelLevel:      refuelLevel,
 	}
