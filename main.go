@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"gioui.org/app"
+	"gioui.org/f32"
 	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
@@ -39,7 +40,7 @@ func main() {
 	go func() {
 		w := app.NewWindow(
 			app.Title("Go ACC Fuel"),
-			app.Size(unit.Dp(600), unit.Dp(200)),
+			app.Size(unit.Dp(600), unit.Dp(250)),
 			//app.MaxSize(unit.Dp(600), unit.Dp(200)),
 			app.MinSize(unit.Dp(600), unit.Dp(200)),
 		)
@@ -99,7 +100,22 @@ func AccLayout(ops *op.Ops, gtx C) {
 			accData.SessionLaps).Layout(gtx)
 	}))
 
+	rows = append(rows,
+		layout.Rigid(func(gtx C) D {
+			gtx.Constraints.Max.Y = 10
+
+			rect := clip.RRect{
+				Rect: f32.Rectangle{Min: f32.Point{X: 0, Y: 4},
+					Max: f32.Point{X: float32(gtx.Constraints.Max.X), Y: float32(6)}},
+			}.Op(gtx.Ops)
+			paint.FillShape(gtx.Ops, widgets.LightGrey, rect)
+			return layout.Dimensions{Size: gtx.Constraints.Max}
+
+		}),
+	)
+
 	rows = append(rows, layout.Flexed(1, func(gtx C) D {
+		paint.ColorOp{Color: textColor}.Add(gtx.Ops)
 		return widgets.BodyInfo(
 			textColor,
 			accData.RaceProgress,
@@ -116,7 +132,6 @@ func AccLayout(ops *op.Ops, gtx C) {
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 20
-
 		return widgets.FooterInfo(textColor).Layout(gtx)
 
 	}))

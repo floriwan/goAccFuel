@@ -25,7 +25,7 @@ var (
 	session      = float32(1800)
 	sessionTimer = float32(1800) // 1h
 	lapTime      = float32(120)  // seconds
-	fuelLevel    = float32(30)
+	fuelLevel    = float32(6)
 	fuelPerLap   = float32(2.45)
 )
 
