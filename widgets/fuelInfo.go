@@ -39,7 +39,7 @@ func (f FuelInfoStyle) Layout(gtx C) D {
 			return layout.Flex{}.Layout(gtx,
 
 				layout.Rigid(func(gtx C) D {
-					return InfoLabel(gtx, "Lapt Time", fmtLapTime(f.lapTime))
+					return InfoLabel(gtx, "Lap Time", fmtLapTime(f.lapTime))
 				}),
 
 				layout.Rigid(func(gtx C) D {

@@ -112,13 +112,13 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 				layout.Rigid(func(gtx C) D {
 					paint.ColorOp{Color: textColor}.Add(gtx.Ops)
-					dim := InfoLabel(gtx, "Box Open Lap", "5")
+					dim := InfoLabel(gtx, "Box Open Lap", "X")
 					xlabel += dim.Size.X
 					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Box Close Lap", "10")
+					dim := InfoLabel(gtx, "Box Close Lap", "X")
 					xlabel += dim.Size.X
 					return dim
 				}),

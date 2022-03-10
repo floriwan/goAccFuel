@@ -12,14 +12,16 @@ import (
 
 type HeaderInfoStyle struct {
 	textColor color.NRGBA
+	status    string
 	fuel      int
 	length    time.Duration
 	laps      int
 }
 
 func HeaderInfo(color color.NRGBA,
-	fuel int, length time.Duration, laps int) HeaderInfoStyle {
+	status string, fuel int, length time.Duration, laps int) HeaderInfoStyle {
 	return HeaderInfoStyle{
+		status:    status,
 		textColor: color,
 		fuel:      fuel,
 		length:    length,
@@ -35,7 +37,7 @@ func (h HeaderInfoStyle) Layout(gtx C) D {
 			paint.ColorOp{Color: h.textColor}.Add(gtx.Ops)
 			return layout.Flex{}.Layout(gtx,
 				layout.Rigid(func(gtx C) D {
-					return InfoLabel(gtx, "Status", "unknown")
+					return InfoLabel(gtx, "Status", h.status)
 				}),
 			)
 

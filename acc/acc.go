@@ -5,6 +5,8 @@ import (
 )
 
 type AccData struct {
+	AccVersion       string
+	Status           string
 	SessionLength    time.Duration
 	SessionTime      time.Duration
 	LapTime          time.Duration

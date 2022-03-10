@@ -95,6 +95,7 @@ func AccLayout(ops *op.Ops, gtx C) {
 		max.Y = 40
 		return widgets.HeaderInfo(
 			textColor,
+			accData.Status,
 			accData.SessionLiter,
 			accData.SessionLength,
 			accData.SessionLaps).Layout(gtx)
@@ -132,7 +133,7 @@ func AccLayout(ops *op.Ops, gtx C) {
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 20
-		return widgets.FooterInfo(textColor).Layout(gtx)
+		return widgets.FooterInfo(textColor, accData.AccVersion).Layout(gtx)
 
 	}))
 
