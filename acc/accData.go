@@ -1,6 +1,7 @@
 package acc
 
 import (
+	"fmt"
 	"log"
 	"syscall"
 	"time"
@@ -82,27 +83,30 @@ func updateShm(accChan chan<- AccData) {
 	status := AccStatus(cData.gData.Status).String()
 	sessionType := AccSessionType(cData.gData.SessionType).String()
 	if status == "off" {
+		sessionLength = time.Duration(0 * float32(time.Second))
 		accChan <- AccData{AccVersion: accVersion, Status: status}
 		return
 	}
 
-	// car is not moving
-	if cData.gData.DistanceTraveled < 5 {
-		accChan <- AccData{AccVersion: accVersion, Status: sessionType}
-		return
+	lapTime := time.Duration(0 * float32(time.Second)) // set an initial default lap time
+	if cData.gData.ILastTime != 2147483647 {
+		lapTime = time.Duration(cData.gData.ILastTime) * time.Millisecond
 	}
 
-	// if we are here, car is moving, save the current session time
-	sessionTimeLeft := time.Duration(cData.gData.SessionTimeLeft) * time.Millisecond
-	if sessionLength == 0 {
-		sessionLength = sessionTimeLeft
-	}
-
-	lapTime := time.Duration(cData.gData.ILastTime) * time.Millisecond
 	fuelLevel := cData.pData.Fuel
 	fuelLap := cData.gData.FuelXLap
 	//fuelUsed := cData.gData.UsedFuel
 	lapsWithFuel := fuelLevel / fuelLap
+
+	// car is moving, save the session time
+	sessionTimeLeft := time.Duration(cData.gData.SessionTimeLeft) * time.Millisecond
+	if sessionLength == 0 {
+		fmt.Printf("++++ save session length")
+		sessionLength = sessionTimeLeft
+	}
+	//if cData.gData.DistanceTraveled > 5 && sessionLength == 0 {
+	//	sessionLength = sessionTimeLeft
+	//}
 
 	lapsToGo := float32(sessionTimeLeft.Round(time.Millisecond)) / float32(lapTime.Round(time.Millisecond))
 	fuelNeeded := fuelLap * float32(lapsToGo+1) // add one lap for safty reasons :-)
@@ -111,21 +115,31 @@ func updateShm(accChan chan<- AccData) {
 	percentageWithFuel := (float32(float32(lapTime)*lapsWithFuel) * float32(100)) / float32(sessionLength)
 	percentageWithFuel += raceProgress
 
-	accChan <- AccData{
-		AccVersion:       accVersion,
-		SessionLength:    sessionLength,
-		SessionTime:      sessionTimeLeft,
-		SessionLaps:      int(sessionLength.Round(time.Millisecond) / lapTime.Round(time.Millisecond)),
-		RaceProgress:     raceProgress,
-		ProgressWithFuel: percentageWithFuel,
-		LapTime:          lapTime,
-		Status:           sessionType,
-		SessionLiter:     int((float32(sessionLength) / float32(lapTime)) * float32(fuelLap)),
-		FuelLevel:        fuelLevel,
-		FuelPerLap:       fuelLap,
-		RefuelLevel:      fuelNeeded,
-		LapsToGo:         lapsToGo,
-		LapsWithFuel:     lapsWithFuel,
+	if lapTime == time.Duration(0*float32(time.Second)) {
+		accChan <- AccData{
+			AccVersion:    accVersion,
+			SessionLength: sessionLength,
+			FuelLevel:     fuelLevel,
+			FuelPerLap:    fuelLap,
+		}
+	} else {
+		accChan <- AccData{
+			AccVersion:       accVersion,
+			SessionLength:    sessionLength,
+			SessionTime:      sessionTimeLeft,
+			SessionLaps:      int(sessionLength.Round(time.Millisecond) / lapTime.Round(time.Millisecond)),
+			RaceProgress:     raceProgress,
+			ProgressWithFuel: percentageWithFuel,
+			LapTime:          lapTime,
+			Status:           sessionType,
+			SessionLiter:     int((float32(sessionLength) / float32(lapTime)) * float32(fuelLap)),
+			FuelLevel:        fuelLevel,
+			FuelPerLap:       fuelLap,
+			RefuelLevel:      fuelNeeded,
+			LapsToGo:         lapsToGo,
+			LapsWithFuel:     lapsWithFuel,
+		}
+
 	}
 
 }
