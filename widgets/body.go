@@ -2,8 +2,8 @@ package widgets
 
 import (
 	"fmt"
+	"goAccFuel/acc"
 	"image/color"
-	"time"
 
 	"gioui.org/f32"
 	"gioui.org/layout"
@@ -12,37 +12,13 @@ import (
 )
 
 type BodyStyle struct {
-	RaceProgress         float32
-	RaceProgressWithFuel float32
-	FuelLevel            float32
-	FuelPerLap           float32
-	SessionTime          time.Duration
-	LaptTime             time.Duration
-	BoxLap               int
-	LapsToGo             float32
-	RefuelLevel          float32
+	accData acc.AccData
 }
 
 func BodyInfo(color color.NRGBA,
-	raceProgress float32,
-	raceProgressWithFuel float32,
-	fuelLevel float32,
-	fuelPerLap float32,
-	sessionTime time.Duration,
-	lapTime time.Duration,
-	boxLap int,
-	lapsToGo float32,
-	refuelLevel float32) BodyStyle {
+	accData acc.AccData) BodyStyle {
 	return BodyStyle{
-		RaceProgress:         raceProgress,
-		RaceProgressWithFuel: raceProgressWithFuel,
-		FuelLevel:            fuelLevel,
-		FuelPerLap:           fuelPerLap,
-		SessionTime:          sessionTime,
-		LaptTime:             lapTime,
-		BoxLap:               boxLap,
-		LapsToGo:             lapsToGo,
-		RefuelLevel:          refuelLevel,
+		accData: accData,
 	}
 }
 func (bs BodyStyle) Layout(gtx C) D {
@@ -51,7 +27,7 @@ func (bs BodyStyle) Layout(gtx C) D {
 		layout.Rigid(func(gtx C) D {
 			gtx.Constraints.Max.Y = 50
 			maxX := float32(gtx.Constraints.Max.X)
-			progressPx := (float32(maxX) * (float32(bs.RaceProgressWithFuel))) / float32(100)
+			progressPx := (float32(maxX) * (float32(bs.accData.ProgressWithFuel))) / float32(100)
 			xlabel := 0 // width of the label left of the pit stop line
 
 			return layout.Flex{}.Layout(gtx,
@@ -63,13 +39,13 @@ func (bs BodyStyle) Layout(gtx C) D {
 					}),
 				*/
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Laps With Fuel", fmt.Sprintf(" %.1f", bs.LapsToGo))
+					dim := InfoLabel(gtx, "Laps With Fuel", fmt.Sprintf(" %.1f", bs.accData.LapsToGo))
 					xlabel += dim.Size.X
 					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Refuel", fmt.Sprintf(" %.1f", bs.RefuelLevel))
+					dim := InfoLabel(gtx, "Refuel", fmt.Sprintf(" %.1f", bs.accData.RefuelLevel))
 					xlabel += dim.Size.X
 					return dim
 				}),
@@ -86,7 +62,7 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 		}),
 		layout.Rigid(func(gtx C) D {
-			return ProgressBarInfo(bs.RaceProgress, bs.RaceProgressWithFuel).Layout(gtx)
+			return ProgressBarInfo(bs.accData.RaceProgress, bs.accData.ProgressWithFuel).Layout(gtx)
 		}),
 		layout.Rigid(func(gtx C) D {
 			gtx.Constraints.Max.Y = 20
@@ -143,10 +119,10 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 		layout.Rigid(func(gtx C) D {
 			return FuelInfo(textColor,
-				bs.FuelLevel,
-				bs.FuelPerLap,
-				bs.SessionTime,
-				bs.LaptTime).Layout(gtx)
+				bs.accData.FuelLevel,
+				bs.accData.FuelPerLap,
+				bs.accData.SessionTime,
+				bs.accData.LapTime).Layout(gtx)
 
 		}))
 

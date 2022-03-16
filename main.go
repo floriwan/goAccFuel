@@ -119,21 +119,13 @@ func AccLayout(ops *op.Ops, gtx C) {
 		paint.ColorOp{Color: textColor}.Add(gtx.Ops)
 		return widgets.BodyInfo(
 			textColor,
-			accData.RaceProgress,
-			accData.ProgressWithFuel,
-			accData.FuelLevel,
-			accData.FuelPerLap,
-			accData.SessionTime,
-			accData.LapTime,
-			accData.BoxLap,
-			accData.LapsToGo,
-			accData.RefuelLevel).Layout(gtx)
+			accData).Layout(gtx)
 	}))
 
 	rows = append(rows, layout.Rigid(func(gtx C) D {
 		max := gtx.Constraints.Max
 		max.Y = 20
-		return widgets.FooterInfo(textColor, accData.AccVersion).Layout(gtx)
+		return widgets.FooterInfo(textColor, accData.CarModel, accData.AccVersion).Layout(gtx)
 
 	}))
 

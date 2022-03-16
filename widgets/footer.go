@@ -16,12 +16,14 @@ type (
 type FooterInfoStyle struct {
 	textColor color.NRGBA
 	version   string
+	carModel  string
 }
 
-func FooterInfo(color color.NRGBA, version string) FooterInfoStyle {
+func FooterInfo(color color.NRGBA, carModel string, version string) FooterInfoStyle {
 	return FooterInfoStyle{
 		textColor: color,
 		version:   version,
+		carModel:  carModel,
 	}
 }
 
@@ -32,6 +34,6 @@ func (f FooterInfoStyle) Layout(gtx C) D {
 		}),
 		layout.Rigid(func(gtx C) D {
 			paint.ColorOp{Color: f.textColor}.Add(gtx.Ops)
-			return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, "ACC "+f.version)
+			return widget.Label{}.Layout(gtx, textShaper, labelFont, labelFontSize, f.carModel+" / ACC "+f.version)
 		}))
 }

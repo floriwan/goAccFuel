@@ -69,6 +69,7 @@ func updateShm(accChan chan<- AccData) {
 	//	log.Printf("no acc available ...\n")
 	//}
 	accVersion := syscall.UTF16ToString(cData.sData.ACVersion[:15])
+	carModel := syscall.UTF16ToString(cData.sData.CarModel[:33])
 
 	if err := accshm.ReadGraphics(&cData.gData); err != nil {
 		log.Fatalf("read physics error %v", err)
@@ -101,7 +102,6 @@ func updateShm(accChan chan<- AccData) {
 	// car is moving, save the session time
 	sessionTimeLeft := time.Duration(cData.gData.SessionTimeLeft) * time.Millisecond
 	if sessionLength == 0 {
-		fmt.Printf("++++ save session length")
 		sessionLength = sessionTimeLeft
 	}
 	//if cData.gData.DistanceTraveled > 5 && sessionLength == 0 {
@@ -115,29 +115,53 @@ func updateShm(accChan chan<- AccData) {
 	percentageWithFuel := (float32(float32(lapTime)*lapsWithFuel) * float32(100)) / float32(sessionLength)
 	percentageWithFuel += raceProgress
 
+	if percentageWithFuel > 100 {
+		fuelNeeded = 0
+	}
+
+	// pit window
+	pitWindowLength := cData.sData.PitWindowEnd - cData.sData.PitWindowStart
+	windowStart := (int32(sessionLength) - pitWindowLength) / 2
+	windowEnd := windowStart + pitWindowLength
+	percentageWindowStart := (float32(windowStart) * float32(100)) / float32(sessionLength)
+	percentageWindowEnd := (float32(windowEnd) * float32(100)) / float32(sessionLength)
+
+	if windowEnd < 0 {
+		fmt.Printf("no pit window")
+	} else {
+		fmt.Printf("       pit window start: %v pit window end: %v\n", cData.sData.PitWindowStart, cData.sData.PitWindowEnd)
+		fmt.Printf("       pit window start: %v pit window end: %v\n", windowStart, windowEnd)
+		fmt.Printf("percentage window start: %v pit window end: %v\n", percentageWindowStart, percentageWindowEnd)
+		fmt.Printf("\n%+v\n", cData.sData)
+	}
+
 	if lapTime == time.Duration(0*float32(time.Second)) {
 		accChan <- AccData{
 			AccVersion:    accVersion,
 			SessionLength: sessionLength,
+			CarModel:      carModel,
 			FuelLevel:     fuelLevel,
 			FuelPerLap:    fuelLap,
 		}
 	} else {
 		accChan <- AccData{
 			AccVersion:       accVersion,
+			CarModel:         carModel,
 			SessionLength:    sessionLength,
 			SessionTime:      sessionTimeLeft,
 			SessionLaps:      int(sessionLength.Round(time.Millisecond) / lapTime.Round(time.Millisecond)),
+			SessionLiter:     int((float32(sessionLength) / float32(lapTime)) * float32(fuelLap)),
 			RaceProgress:     raceProgress,
 			ProgressWithFuel: percentageWithFuel,
 			LapTime:          lapTime,
 			Status:           sessionType,
-			SessionLiter:     int((float32(sessionLength) / float32(lapTime)) * float32(fuelLap)),
 			FuelLevel:        fuelLevel,
 			FuelPerLap:       fuelLap,
 			RefuelLevel:      fuelNeeded,
 			LapsToGo:         lapsToGo,
 			LapsWithFuel:     lapsWithFuel,
+			PitWindowStart:   0,
+			PitWindowEnd:     0,
 		}
 
 	}

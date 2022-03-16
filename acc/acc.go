@@ -7,6 +7,7 @@ import (
 type AccData struct {
 	AccVersion       string
 	Status           string
+	CarModel         string
 	SessionLength    time.Duration
 	SessionTime      time.Duration
 	LapTime          time.Duration
@@ -21,6 +22,8 @@ type AccData struct {
 	BoxLap           int
 	LapsToGo         float32
 	RefuelLevel      float32
+	PitWindowStart   float32
+	PitWindowEnd     float32
 }
 
 var (
