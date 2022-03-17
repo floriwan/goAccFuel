@@ -13,7 +13,7 @@ func updateSim(accChan chan<- AccData) {
 	fuelPerSec := fuelPerLap / lapTime
 	fuelLevel -= fuelPerSec
 	if fuelLevel <= 0 {
-		fuelLevel = 30
+		fuelLevel = 40
 	}
 
 	lapsWithFuel := fuelLevel / fuelPerLap
@@ -40,5 +40,7 @@ func updateSim(accChan chan<- AccData) {
 		LapsToGo:         lapsWithFuel,
 		BoxLap:           lapsDone + int(lapsWithFuel),
 		RefuelLevel:      refuelLevel,
+		Status:           "race",
+		AccVersion:       "1.2",
 	}
 }

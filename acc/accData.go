@@ -129,6 +129,7 @@ func updateShm(accChan chan<- AccData) {
 	if windowEnd < 0 {
 		fmt.Printf("no pit window")
 	} else {
+		fmt.Printf("       pit window start: %v\n", time.Duration(cData.sData.PitWindowStart)*time.Millisecond)
 		fmt.Printf("       pit window start: %v pit window end: %v\n", cData.sData.PitWindowStart, cData.sData.PitWindowEnd)
 		fmt.Printf("       pit window start: %v pit window end: %v\n", windowStart, windowEnd)
 		fmt.Printf("percentage window start: %v pit window end: %v\n", percentageWindowStart, percentageWindowEnd)
@@ -151,6 +152,7 @@ func updateShm(accChan chan<- AccData) {
 			SessionTime:      sessionTimeLeft,
 			SessionLaps:      int(sessionLength.Round(time.Millisecond) / lapTime.Round(time.Millisecond)),
 			SessionLiter:     int((float32(sessionLength) / float32(lapTime)) * float32(fuelLap)),
+			LapsDone:         int(cData.gData.CompletedLaps),
 			RaceProgress:     raceProgress,
 			ProgressWithFuel: percentageWithFuel,
 			LapTime:          lapTime,

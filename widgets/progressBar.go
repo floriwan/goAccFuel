@@ -42,11 +42,11 @@ func (f ProgressBarStyle) Layout(gtx C) D {
 			paint.FillShape(gtx.Ops, LightGrey, rect)
 
 			// pit window bar
-			rect = clip.RRect{
+			/*rect = clip.RRect{
 				Rect: f32.Rectangle{Min: f32.Point{X: 100, Y: float32(gtx.Constraints.Max.Y - 5)},
 					Max: f32.Point{X: 200, Y: float32(gtx.Constraints.Max.Y)}},
 			}.Op(gtx.Ops)
-			paint.FillShape(gtx.Ops, Green, rect)
+			paint.FillShape(gtx.Ops, Green, rect)*/
 
 			// race progress bar
 			rect = clip.RRect{

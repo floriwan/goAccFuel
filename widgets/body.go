@@ -38,20 +38,32 @@ func (bs BodyStyle) Layout(gtx C) D {
 					return dim
 					}),
 				*/
+
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Laps With Fuel", fmt.Sprintf(" %.1f", bs.accData.LapsToGo))
+					dim := InfoLabel(gtx, "Laps Done", fmt.Sprintf("%v", bs.accData.LapsDone))
 					xlabel += dim.Size.X
 					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Refuel", fmt.Sprintf(" %.1f", bs.accData.RefuelLevel))
+					dim := InfoLabel(gtx, "Laps With Fuel", fmt.Sprintf("%.1f", bs.accData.LapsToGo))
 					xlabel += dim.Size.X
 					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
+					paint.ColorOp{Color: Red}.Add(gtx.Ops)
+					if bs.accData.RefuelLevel < 0 {
+						paint.ColorOp{Color: Green}.Add(gtx.Ops)
+					}
+					dim := InfoLabel(gtx, "Refuel", fmt.Sprintf("%.1f", bs.accData.RefuelLevel))
+					xlabel += dim.Size.X
+					paint.ColorOp{Color: textColor}.Add(gtx.Ops)
+					return dim
+				}),
 
+				// Refuel Bar
+				layout.Rigid(func(gtx C) D {
 					rect := clip.RRect{
 						Rect: f32.Rectangle{Min: f32.Point{X: progressPx - float32(xlabel) - 2, Y: 40},
 							Max: f32.Point{X: progressPx - float32(xlabel) + 2, Y: float32(gtx.Constraints.Max.Y)}},
@@ -88,13 +100,13 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 				layout.Rigid(func(gtx C) D {
 					paint.ColorOp{Color: textColor}.Add(gtx.Ops)
-					dim := InfoLabel(gtx, "Box Open Lap", "X")
+					dim := InfoLabel(gtx, "Box Open At", "X")
 					xlabel += dim.Size.X
 					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Box Close Lap", "X")
+					dim := InfoLabel(gtx, "Box Close At", "X")
 					xlabel += dim.Size.X
 					return dim
 				}),
