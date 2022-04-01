@@ -53,7 +53,7 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 				layout.Rigid(func(gtx C) D {
 					paint.ColorOp{Color: Red}.Add(gtx.Ops)
-					if bs.accData.RefuelLevel < 0 {
+					if bs.accData.RefuelLevel <= 0 {
 						paint.ColorOp{Color: Green}.Add(gtx.Ops)
 					}
 					dim := InfoLabel(gtx, "Refuel", fmt.Sprintf("%.1f", bs.accData.RefuelLevel))

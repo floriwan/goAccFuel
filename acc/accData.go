@@ -2,17 +2,16 @@ package acc
 
 import (
 	"fmt"
+	"goAccFuel/acc/shm"
 	"log"
 	"syscall"
 	"time"
-
-	"github.com/Dekadee/accshm"
 )
 
 type accShmData struct {
-	sData accshm.ACCStatic
-	gData accshm.ACCGraphics
-	pData accshm.ACCPhysics
+	sData shm.ACCStatic
+	gData shm.ACCGraphics
+	pData shm.ACCPhysics
 }
 
 type AccStatus int32
@@ -59,7 +58,7 @@ func updateShm(accChan chan<- AccData) {
 
 	var cData accShmData // all shm data
 
-	if err := accshm.ReadStatic(&cData.sData); err != nil {
+	if err := shm.ReadStatic(&cData.sData); err != nil {
 		log.Fatalf("no acc shm available, retry ...")
 		return
 	}
@@ -71,24 +70,28 @@ func updateShm(accChan chan<- AccData) {
 	accVersion := syscall.UTF16ToString(cData.sData.ACVersion[:15])
 	carModel := syscall.UTF16ToString(cData.sData.CarModel[:33])
 
-	if err := accshm.ReadGraphics(&cData.gData); err != nil {
+	if err := shm.ReadGraphics(&cData.gData); err != nil {
 		log.Fatalf("read physics error %v", err)
 		return
 	}
 
-	if err := accshm.ReadPhysics(&cData.pData); err != nil {
+	if err := shm.ReadPhysics(&cData.pData); err != nil {
 		log.Fatalf("read physics error %v", err)
 		return
 	}
 
-	status := AccStatus(cData.gData.Status).String()
+	//status := AccStatus(cData.gData.Status).String()
 	sessionType := AccSessionType(cData.gData.SessionType).String()
-	if status == "off" {
-		sessionLength = time.Duration(0 * float32(time.Second))
-		accChan <- AccData{AccVersion: accVersion, Status: status}
-		return
-	}
-
+	//if sessionLength < time.Duration(0*float32(time.Second)) {
+	//	sessionLength = time.Duration(0 * float32(time.Second))
+	//}
+	/*
+		if status == "off" {
+			sessionLength = time.Duration(0 * float32(time.Second))
+			accChan <- AccData{AccVersion: accVersion, Status: status}
+			return
+		}
+	*/
 	lapTime := time.Duration(0 * float32(time.Second)) // set an initial default lap time
 	if cData.gData.ILastTime != 2147483647 {
 		lapTime = time.Duration(cData.gData.ILastTime) * time.Millisecond
@@ -101,7 +104,7 @@ func updateShm(accChan chan<- AccData) {
 
 	// car is moving, save the session time
 	sessionTimeLeft := time.Duration(cData.gData.SessionTimeLeft) * time.Millisecond
-	if sessionLength == 0 {
+	if sessionLength == 0 || sessionLength < sessionTimeLeft {
 		sessionLength = sessionTimeLeft
 	}
 	//if cData.gData.DistanceTraveled > 5 && sessionLength == 0 {
@@ -120,8 +123,8 @@ func updateShm(accChan chan<- AccData) {
 	}
 
 	// pit window
-	pitWindowLength := cData.sData.PitWindowEnd - cData.sData.PitWindowStart
-	windowStart := (int32(sessionLength) - pitWindowLength) / 2
+	pitWindowLength := uint32(cData.sData.PitWindowEnd - cData.sData.PitWindowStart)
+	windowStart := (uint32(sessionLength.Seconds()) - pitWindowLength) / 2
 	windowEnd := windowStart + pitWindowLength
 	percentageWindowStart := (float32(windowStart) * float32(100)) / float32(sessionLength)
 	percentageWindowEnd := (float32(windowEnd) * float32(100)) / float32(sessionLength)
@@ -134,6 +137,11 @@ func updateShm(accChan chan<- AccData) {
 		fmt.Printf("       pit window start: %v pit window end: %v\n", windowStart, windowEnd)
 		fmt.Printf("percentage window start: %v pit window end: %v\n", percentageWindowStart, percentageWindowEnd)
 		fmt.Printf("\n%+v\n", cData.sData)
+
+		fmt.Printf("car skin %v\n", syscall.UTF16ToString(cData.sData.CarSkin[:33]))
+		fmt.Printf("dry tyre name %v\n", syscall.UTF16ToString(cData.sData.DryTyreName[:33]))
+		fmt.Printf("wet tyre name %v\n", syscall.UTF16ToString(cData.sData.WetTyreName[:33]))
+
 	}
 
 	if lapTime == time.Duration(0*float32(time.Second)) {
