@@ -156,7 +156,7 @@ type ACCStatic struct {
 	MaxRPM                   int32
 	MaxFuel                  float32
 	MaxSuspensionTravel      [4]float32
-	TyreRadius               float32
+	TyreRadius               [4]float32
 	MaxTurboBoost            float32
 	Deprecated1              float32
 	Deprecated2              float32
@@ -175,20 +175,21 @@ type ACCStatic struct {
 	EngineBrakeSettingsCount int32
 	ERSPowerControllerCount  int32
 	TrackSplineLength        float32
-	Pad2                     [12]uint16
-	TrackConfiguration       [33]uint16
-	Pad3                     uint16
-	ERSMaxJ                  float32
-	IsTimedRace              int32
-	HasExtraLap              int32
-	CarSkin                  [33]uint16
-	ReversedGridPosition     int32
-	PitWindowStart           int32
-	PitWindowEnd             int32
-	IsOnline                 int32
-	Pad4                     [2]uint16
-	DryTyreName              [33]uint16
-	WetTyreName              [33]uint16
+	//Pad2                     [12]uint16
+	TrackConfiguration [33]uint16
+	//Pad3                 uint16
+	ERSMaxJ              float32
+	IsTimedRace          int32
+	HasExtraLap          int32
+	Pad3                 uint16
+	CarSkin              [33]uint16
+	Pad4                 uint16
+	ReversedGridPosition int32
+	PitWindowStart       int32
+	PitWindowEnd         int32
+	IsOnline             int32
+	DryTyreName          [33]uint16
+	WetTyreName          [33]uint16
 }
 
 func ReadPhysics(physics *ACCPhysics) error {

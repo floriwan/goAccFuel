@@ -76,7 +76,7 @@ func run(w *app.Window, accChan <-chan acc.AccData) error {
 				e.Frame(gtx.Ops)
 			}
 		case a := <-accChan:
-			log.Printf("%+v\n", a)
+			//log.Printf("%+v\n", a)
 			accData = a
 			w.Invalidate()
 		}

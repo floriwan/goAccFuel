@@ -74,7 +74,10 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 		}),
 		layout.Rigid(func(gtx C) D {
-			return ProgressBarInfo(bs.accData.RaceProgress, bs.accData.ProgressWithFuel).Layout(gtx)
+			return ProgressBarInfo(bs.accData.RaceProgress,
+				bs.accData.ProgressWithFuel,
+				bs.accData.PitWindowStart,
+				bs.accData.PitWindowEnd).Layout(gtx)
 		}),
 		layout.Rigid(func(gtx C) D {
 			gtx.Constraints.Max.Y = 20
@@ -100,13 +103,13 @@ func (bs BodyStyle) Layout(gtx C) D {
 
 				layout.Rigid(func(gtx C) D {
 					paint.ColorOp{Color: textColor}.Add(gtx.Ops)
-					dim := InfoLabel(gtx, "Box Open At", "X")
+					dim := InfoLabel(gtx, "Box Open At", fmtDuration(bs.accData.PitWindowStartTime))
 					xlabel += dim.Size.X
 					return dim
 				}),
 
 				layout.Rigid(func(gtx C) D {
-					dim := InfoLabel(gtx, "Box Close At", "X")
+					dim := InfoLabel(gtx, "Box Close At", fmtDuration(bs.accData.PitWindowCloseTime))
 					xlabel += dim.Size.X
 					return dim
 				}),

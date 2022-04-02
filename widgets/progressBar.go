@@ -10,12 +10,19 @@ import (
 type ProgressBarStyle struct {
 	RaceProgress         float32 // race progress in percentage of total time
 	RaceProgressWithFuel float32 // percentage of the race to reach with current fuel level
+	PitWindowStart       float32 // percentage of the race when pit window will open
+	PitWindowClose       float32 // percentage of the race when pit window is closing
 }
 
-func ProgressBarInfo(raceProgress float32, raceProgressWithFuel float32) ProgressBarStyle {
+func ProgressBarInfo(raceProgress float32,
+	raceProgressWithFuel float32,
+	pitWindowStart float32,
+	pitWindowClose float32) ProgressBarStyle {
 	return ProgressBarStyle{
 		RaceProgress:         raceProgress,
 		RaceProgressWithFuel: raceProgressWithFuel,
+		PitWindowStart:       pitWindowStart,
+		PitWindowClose:       pitWindowClose,
 	}
 }
 
@@ -35,6 +42,9 @@ func (f ProgressBarStyle) Layout(gtx C) D {
 			progressPx := (float32(maxX) * (f.RaceProgress)) / float32(100)
 			progressWithFuelPx := (float32(maxX) * (float32(f.RaceProgressWithFuel))) / float32(100)
 
+			pitWindowOpenPx := (float32(maxX) * (f.PitWindowStart)) / float32(100)
+			pitWindowClosePx := (float32(maxX) * (f.PitWindowClose)) / float32(100)
+
 			rect := clip.RRect{
 				Rect: f32.Rectangle{Min: f32.Point{X: minX, Y: minY},
 					Max: f32.Point{X: maxX, Y: maxY}},
@@ -42,11 +52,11 @@ func (f ProgressBarStyle) Layout(gtx C) D {
 			paint.FillShape(gtx.Ops, LightGrey, rect)
 
 			// pit window bar
-			/*rect = clip.RRect{
-				Rect: f32.Rectangle{Min: f32.Point{X: 100, Y: float32(gtx.Constraints.Max.Y - 5)},
-					Max: f32.Point{X: 200, Y: float32(gtx.Constraints.Max.Y)}},
+			rect = clip.RRect{
+				Rect: f32.Rectangle{Min: f32.Point{X: pitWindowOpenPx, Y: float32(gtx.Constraints.Max.Y - 5)},
+					Max: f32.Point{X: pitWindowClosePx, Y: float32(gtx.Constraints.Max.Y)}},
 			}.Op(gtx.Ops)
-			paint.FillShape(gtx.Ops, Green, rect)*/
+			paint.FillShape(gtx.Ops, Green, rect)
 
 			// race progress bar
 			rect = clip.RRect{
