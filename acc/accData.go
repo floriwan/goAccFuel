@@ -13,11 +13,11 @@ type accShmData struct {
 	pData shm.ACCPhysics
 }
 
-type AccStatus int32
+//type accStatus int32
 
-func (s AccStatus) String() string {
-	return [...]string{"off", "replay", "live", "pause"}[s]
-}
+//func (s accStatus) String() string {
+//	return [...]string{"off", "replay", "live", "pause"}[s]
+//}
 
 type AccSessionType int32
 
