@@ -1,6 +1,7 @@
 package acc
 
 import (
+	"fmt"
 	"goAccFuel/acc/shm"
 	"log"
 	"syscall"
@@ -107,9 +108,14 @@ func updateShm(accChan chan<- AccData) {
 	//pitWindowLength := uint32(cData.sData.PitWindowEnd - cData.sData.PitWindowStart)
 	pitWindowOpenTime := time.Duration(cData.sData.PitWindowStart) * time.Millisecond
 	pitWindowCloseTime := time.Duration(cData.sData.PitWindowEnd) * time.Millisecond
-	pitWindowOpenPercentage := (float32(pitWindowOpenTime) * float32(100)) / float32(sessionLength)
-	pitWindowClosePercentage := (float32(pitWindowCloseTime) * float32(100)) / float32(sessionLength)
-	//fmt.Printf("pit window start: %v close: %v\n", pitWindowOpenTime, pitWindowCloseTime)
+	pitWindowLength := pitWindowCloseTime - pitWindowOpenTime
+	correctPitWindowStart := (sessionLength - pitWindowLength) / 2
+	correctPitWindowEnd := correctPitWindowStart + pitWindowLength
+	pitWindowOpenPercentage := (float32(correctPitWindowStart) * float32(100)) / float32(sessionLength)
+	pitWindowClosePercentage := (float32(correctPitWindowEnd) * float32(100)) / float32(sessionLength)
+	//fmt.Printf("*** %+v\n", cData.sData)
+	fmt.Printf("pit window start: %v close: %v length: %v\n", pitWindowOpenTime, pitWindowCloseTime, pitWindowLength)
+	fmt.Printf("session length: %v pit window start: %v close: %v\n", sessionLength, correctPitWindowStart, correctPitWindowEnd)
 	//fmt.Printf("car skin %v\n", syscall.UTF16ToString(cData.sData.CarSkin[:33]))
 	//fmt.Printf("dry tyre name %v\n", syscall.UTF16ToString(cData.sData.DryTyreName[:33]))
 	//fmt.Printf("wet tyre name %v\n", syscall.UTF16ToString(cData.sData.WetTyreName[:33]))
@@ -145,8 +151,8 @@ func updateShm(accChan chan<- AccData) {
 		RefuelLevel:        fuelNeeded,
 		LapsToGo:           lapsToGo,
 		LapsWithFuel:       lapsWithFuel,
-		PitWindowStartTime: pitWindowOpenTime,
-		PitWindowCloseTime: pitWindowCloseTime,
+		PitWindowStartTime: correctPitWindowStart,
+		PitWindowCloseTime: correctPitWindowEnd,
 		PitWindowStart:     pitWindowOpenPercentage,
 		PitWindowEnd:       pitWindowClosePercentage,
 	}
