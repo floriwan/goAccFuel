@@ -1,6 +1,7 @@
 package acc
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -29,22 +30,33 @@ type AccData struct {
 	PitWindowEnd       float32
 }
 
-var (
-	session      = float32(1800)
-	sessionTimer = float32(1800) // 1h
-	lapTime      = float32(120)  // seconds
-	fuelLevel    = float32(6)
-	fuelPerLap   = float32(2.45)
-)
+type AccUpdater interface {
+	update() (AccData, error)
+}
 
 func Update(sim bool, accChan chan<- AccData) {
 
 	ticker := time.NewTicker(time.Second * time.Duration(1))
 	for range ticker.C {
+
 		if sim {
-			updateSim(accChan)
+			data, err := updateAccSim()
+			if err != nil {
+				fmt.Printf("error: %e\n", err)
+			}
+			accChan <- data
+
 		} else {
-			updateShm(accChan)
+			data, err := updateAccShm()
+			if err != nil {
+				fmt.Printf("error: %e\n", err)
+			}
+			accChan <- data
 		}
+
 	}
+}
+
+func saveLapData() {
+
 }
