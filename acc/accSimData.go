@@ -52,6 +52,6 @@ func updateAccSim() (AccData, error) {
 		PitWindowStart:     float32(25),
 		PitWindowEnd:       float32(75),
 		Status:             "race",
-		AccVersion:         "1.2"}, nil
+		AccVersion:         "sim"}, nil
 
 }

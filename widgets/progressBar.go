@@ -58,19 +58,19 @@ func (f ProgressBarStyle) Layout(gtx C) D {
 			}.Op(gtx.Ops)
 			paint.FillShape(gtx.Ops, Green, rect)
 
-			// race progress bar
-			rect = clip.RRect{
-				Rect: f32.Rectangle{Min: f32.Point{X: minX, Y: minY},
-					Max: f32.Point{X: progressPx, Y: maxY}},
-			}.Op(gtx.Ops)
-			paint.FillShape(gtx.Ops, Wight, rect)
-
 			// refuel bar
 			rect = clip.RRect{
 				Rect: f32.Rectangle{Min: f32.Point{X: progressWithFuelPx - 2, Y: 0},
 					Max: f32.Point{X: progressWithFuelPx + 2, Y: float32(gtx.Constraints.Max.Y)}},
 			}.Op(gtx.Ops)
 			paint.FillShape(gtx.Ops, Red, rect)
+
+			// race progress bar
+			rect = clip.RRect{
+				Rect: f32.Rectangle{Min: f32.Point{X: minX, Y: minY},
+					Max: f32.Point{X: progressPx, Y: maxY}},
+			}.Op(gtx.Ops)
+			paint.FillShape(gtx.Ops, Wight, rect)
 
 			return layout.Dimensions{Size: gtx.Constraints.Max}
 		}))

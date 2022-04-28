@@ -47,6 +47,7 @@ func (s AccSessionType) String() string {
 }
 
 var sessionLength time.Duration
+var oldSessionType = ""
 
 func updateAccShm() (AccData, error) {
 	var cData accShmData // all shm data
@@ -72,6 +73,10 @@ func updateAccShm() (AccData, error) {
 
 	//status := AccStatus(cData.gData.Status).String()
 	sessionType := AccSessionType(cData.gData.SessionType).String()
+	if oldSessionType != sessionType {
+		sessionLength = 0
+		oldSessionType = sessionType
+	}
 
 	lapTime := time.Duration(0 * float32(time.Second)) // set an initial default lap time
 	if cData.gData.ILastTime != 2147483647 {
@@ -89,7 +94,6 @@ func updateAccShm() (AccData, error) {
 	percentageWithFuel := float32(0)
 	completedLaps := int(cData.gData.CompletedLaps)
 
-	// car is moving, save the session time
 	sessionTimeLeft := time.Duration(cData.gData.SessionTimeLeft) * time.Millisecond
 	if sessionLength == 0 || sessionLength < sessionTimeLeft {
 		sessionLength = sessionTimeLeft
