@@ -43,7 +43,13 @@ func (f ProgressBarStyle) Layout(gtx C) D {
 			progressWithFuelPx := (float32(maxX) * (float32(f.RaceProgressWithFuel))) / float32(100)
 
 			pitWindowOpenPx := (float32(maxX) * (f.PitWindowStart)) / float32(100)
+			if pitWindowOpenPx < minX {
+				pitWindowOpenPx = minX
+			}
 			pitWindowClosePx := (float32(maxX) * (f.PitWindowClose)) / float32(100)
+			if pitWindowClosePx > maxX {
+				pitWindowClosePx = maxX
+			}
 
 			rect := clip.RRect{
 				Rect: f32.Rectangle{Min: f32.Point{X: minX, Y: minY},
