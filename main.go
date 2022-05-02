@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"goAccFuel/acc"
 	"goAccFuel/widgets"
 	"image"
@@ -23,6 +24,7 @@ var backgroundColor = color.NRGBA{R: 18, G: 18, B: 18, A: 255} // very dark gray
 var textColor = color.NRGBA{R: 222, G: 222, B: 222, A: 222}
 
 var accData acc.AccData
+var sessionData []acc.AccData
 
 type (
 	D = layout.Dimensions
@@ -78,10 +80,29 @@ func run(w *app.Window, accChan <-chan acc.AccData) error {
 		case a := <-accChan:
 			//log.Printf("%+v\n", a)
 			accData = a
+			saveSessionData(accData)
+			printSessionData(accData)
 			w.Invalidate()
 		}
 	}
 
+}
+
+func printSessionData(accData acc.AccData) {
+	if sessionData[len(sessionData)-1].Status == accData.Status {
+		return
+	}
+
+	for _, v := range sessionData {
+		fmt.Printf("%v;%v;%v;%v\n", v.LapsDone, v.LapTime, v.FuelLevel, v.FuelPerLap)
+	}
+
+}
+
+func saveSessionData(accData acc.AccData) {
+	if sessionData[len(sessionData)-1].SessionLaps < accData.SessionLaps {
+		sessionData = append(sessionData, accData)
+	}
 }
 
 func AccLayout(ops *op.Ops, gtx C) {
