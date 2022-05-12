@@ -80,8 +80,8 @@ func run(w *app.Window, accChan <-chan acc.AccData) error {
 		case a := <-accChan:
 			//log.Printf("%+v\n", a)
 			accData = a
-			saveSessionData(accData)
-			printSessionData(accData)
+			//saveSessionData(accData)
+			//printSessionData(accData)
 			w.Invalidate()
 		}
 	}
@@ -100,9 +100,9 @@ func printSessionData(accData acc.AccData) {
 }
 
 func saveSessionData(accData acc.AccData) {
-	if sessionData[len(sessionData)-1].SessionLaps < accData.SessionLaps {
-		sessionData = append(sessionData, accData)
-	}
+	//if sessionData[len(sessionData)-1].SessionLaps < accData.SessionLaps {
+	//	sessionData = append(sessionData, accData)
+	//}
 }
 
 func AccLayout(ops *op.Ops, gtx C) {
